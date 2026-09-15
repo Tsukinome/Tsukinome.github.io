@@ -415,6 +415,10 @@ const revealIO = new IntersectionObserver((entries) => {
   }
 }, { threshold: 0.15, rootMargin: "0px 0px -5% 0px" });
 function observeReveals() { for (const n of $$(".reveal:not(.in)")) revealIO.observe(n); }
+// Safety net for fast scrolling: anything already above the fold is shown, observer or not.
+function sweepReveals() {
+  for (const n of $$(".reveal:not(.in)")) if (n.getBoundingClientRect().top < innerHeight * 0.95) { n.classList.add("in"); const h = n.matches("h2") ? n : n.querySelector("h2"); if (h) scramble(h); revealIO.unobserve(n); }
+}
 
 function bindTilt() {
   if (TOUCH || REDUCED) return;
@@ -464,6 +468,7 @@ addEventListener("scroll", () => {
   const r = timeline.getBoundingClientRect();
   const p = Math.max(0, Math.min(1, (innerHeight * 0.8 - r.top) / r.height));
   timeline.style.setProperty("--draw", p.toFixed(3));
+  sweepReveals();
 }, { passive: true });
 
 /* ---------- the living sky ---------- */
