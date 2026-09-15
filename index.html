@@ -7,13 +7,13 @@
   <meta name="description" content="Kaggle projects and data analysis work by Kristina Grigaitytė. A live portfolio that reads its stats straight from GitHub." />
   <meta property="og:title" content="Kristina Grigaitytė · Data portfolio" />
   <meta property="og:description" content="Kaggle projects and data analysis work. A live portfolio that reads its stats straight from GitHub." />
-  <meta property="og:image" content="https://avatars.githubusercontent.com/u/75446070?v=5" />
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/75446070?v=6" />
   <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
   <link rel="preconnect" href="https://api.github.com" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=5" />
+  <link rel="stylesheet" href="css/style.css?v=6" />
   <script>
     // Apply a saved theme before first paint to avoid a flash.
     try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
@@ -44,8 +44,8 @@
     <ul class="nav-links">
       <li><a href="#journey">Journey</a></li>
       <li><a href="#projects">Kaggle</a></li>
-      <li><a href="#now">Now</a></li>
       <li><a href="#contact">Contact</a></li>
+      <li><button class="kbd-btn" id="palette-btn" type="button" aria-label="Open command palette"><kbd>⌘</kbd><kbd>K</kbd></button></li>
       <li><button class="theme-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode"><svg><use href="#i-sun"/></svg></button></li>
     </ul>
   </div>
@@ -74,7 +74,7 @@
       <div class="stat"><div class="label">Public repos</div><div class="value skel" data-stat="repos">00</div></div>
       <div class="stat"><div class="label">Followers</div><div class="value skel" data-stat="followers">00</div></div>
       <div class="stat"><div class="label">Stars</div><div class="value skel" data-stat="stars">00</div></div>
-      <div class="stat"><div class="label">Public commits this year</div><div class="value skel" data-stat="commits">00</div></div>
+      <div class="stat"><div class="label">Commits this year</div><div class="value skel" data-stat="commits">00</div></div>
     </div>
     <div class="notice" id="notice" role="status"></div>
   </div>
@@ -82,11 +82,18 @@
 </header>
 
 <main>
+  <div class="ticker" id="ticker" aria-hidden="true"><div class="ticker-track" id="ticker-track"></div></div>
+
   <section class="chapter" id="journey" data-chapter="Journey">
     <div class="wrap">
       <p class="eyebrow reveal">Chapter 01</p>
       <div class="section-head reveal"><h2>From the lab to the notebook</h2><p>Milestones, with the Kaggle chapters placed by their GitHub dates.</p></div>
       <ol class="timeline" id="timeline"></ol>
+      <div class="heat reveal" id="heat">
+        <div class="heat-head"><span class="eyebrow" style="margin:0"><span class="live"></span> Last 12 months of public commits</span><span class="heat-total" id="heat-total">…</span></div>
+        <div class="heat-grid" id="heat-grid"></div>
+        <div class="heat-legend"><span>less</span><i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i><span>more</span></div>
+      </div>
     </div>
   </section>
 
@@ -96,47 +103,6 @@
       <div class="section-head reveal"><h2>The Kaggle years</h2><p>Hover a card. Numbers are live.</p></div>
       <div class="filters reveal" id="filters" role="group" aria-label="Filter projects by topic"></div>
       <div class="grid" id="project-grid"></div>
-    </div>
-  </section>
-
-  <section class="chapter now" id="now" data-chapter="Now">
-    <div class="wrap">
-      <p class="eyebrow reveal">Chapter 03</p>
-      <div class="section-head reveal"><h2>What I'm doing now</h2><p>Straight from the GitHub event stream.</p></div>
-      <div class="now-grid">
-        <div class="panel reveal">
-          <h3>Latest commits</h3>
-          <ol class="feed" id="feed"><li class="skel">loading</li><li class="skel">loading</li><li class="skel">loading</li></ol>
-        </div>
-        <div class="panel reveal">
-          <h3>Languages across the account</h3>
-          <div class="donut-wrap">
-            <div class="donut" id="donut"><div class="donut-hole"><strong id="donut-total">…</strong><small>bytes of code</small></div></div>
-            <ul class="donut-key" id="donut-key"></ul>
-          </div>
-        </div>
-      </div>
-      <div class="activity reveal" id="activity-list"></div>
-    </div>
-  </section>
-
-  <section class="chapter how" id="how" data-chapter="Backstage">
-    <div class="wrap">
-      <p class="eyebrow reveal">Chapter 04</p>
-      <div class="section-head reveal"><h2>Backstage</h2><p>One HTML file. No build, no backend.</p></div>
-      <div class="steps reveal">
-        <div class="step"><h3>Curate</h3><p>One config file.</p></div>
-        <div class="step"><h3>Fetch</h3><p>GitHub REST API, no token.</p></div>
-        <div class="step"><h3>Cache</h3><p>One hour, in your browser.</p></div>
-        <div class="step"><h3>Render</h3><p>Markdown to HTML, client-side.</p></div>
-      </div>
-      <div class="meter reveal" id="meter">
-        <span><span class="live"></span> This visit</span>
-        <span><strong id="m-live">0</strong> live calls</span>
-        <span><strong id="m-cache">0</strong> from cache</span>
-        <span><strong id="m-limit">…</strong> API calls left this hour</span>
-        <a id="site-repo" href="#" target="_blank" rel="noopener">Source ↗</a>
-      </div>
     </div>
   </section>
 
@@ -161,6 +127,12 @@
 
 <div class="cursor-glow" id="glow" aria-hidden="true"></div>
 
+<dialog class="palette" id="palette">
+  <input id="palette-input" type="text" placeholder="Jump to a chapter, open a repo, toggle theme…" autocomplete="off" spellcheck="false" />
+  <ul id="palette-list" role="listbox"></ul>
+  <div class="palette-foot"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>↵</kbd> select</span><span><kbd>esc</kbd> close</span></div>
+</dialog>
+
 <dialog class="readme" id="readme-modal">
   <div class="modal-head">
     <strong id="readme-title">README.md</strong>
@@ -171,7 +143,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
-<script src="js/projects.js?v=5"></script>
-<script src="js/app.js?v=5"></script>
+<script src="js/projects.js?v=6"></script>
+<script src="js/app.js?v=6"></script>
 </body>
 </html>
