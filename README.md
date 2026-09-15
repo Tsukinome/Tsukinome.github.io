@@ -1,47 +1,47 @@
-# Tsukinome.github.io
+# tsukinome.github.io
 
-Personal portfolio, live at **https://tsukinome.github.io/**.
+Live at **https://tsukinome.github.io/**. A one-page portfolio told as a story,
+with almost everything on it fetched at load time.
 
-A single static page that pulls its numbers from the GitHub REST API on every
-load: profile stats, per-repository language mix, last activity and rendered
-READMEs. Curated text lives in one config file.
+## Live features
 
-## Structure
+| Feature | Source |
+| --- | --- |
+| Avatar, repo count, followers, stars | GitHub `users` + `repos` |
+| Public commits this year | GitHub `search/commits` |
+| Latest commits feed | GitHub `repos/*/commits` for the 4 most active repos |
+| Language donut across the account | GitHub `repos/*/languages` |
+| Per-project stats, language bar, README modal | GitHub `repos/*`, `languages`, `readme` |
+| Journey timeline dates for Kaggle projects | GitHub repo `created_at` |
+| Local time and greeting | `Intl` with `Europe/Vilnius` |
+| Weather in Vilnius | Open-Meteo, no key |
+| API meter (live calls, cache hits, remaining quota) | Rate-limit headers |
+
+Motion: constellation canvas that reacts to the cursor with shooting stars,
+typewriter, count-up stats, reveal on scroll, card tilt, cursor glow,
+scroll progress bar, chapter dots. All of it respects `prefers-reduced-motion`.
+
+## Files
 
 | File | Purpose |
 | --- | --- |
-| `index.html` | Page skeleton and inline SVG icons |
-| `css/style.css` | Styling, light and dark themes |
-| `js/projects.js` | **Edit this.** Site info and the list of showcased projects |
-| `js/app.js` | Fetches GitHub data, caches it for an hour, renders cards |
+| `index.html` | Chapter skeleton and inline SVG icons |
+| `css/style.css` | Twilight theme, light theme via toggle |
+| `js/projects.js` | **Edit this.** Site info, journey milestones, projects |
+| `js/app.js` | Fetching, caching, rendering, motion |
+| `.github/workflows/pages.yml` | Deploys on push to `main` |
 
 ## Add a project
 
-Append an entry to `PROJECTS` in `js/projects.js`:
+Append to `PROJECTS` in `js/projects.js`. Only `repo` is required.
 
 ```js
-{
-  repo: "my-repo",                       // required, must exist under the GitHub user
-  title: "Readable title",
-  kaggle: "https://www.kaggle.com/c/...", // optional
-  kaggleLabel: "Featured competition",
-  summary: "One or two sentences.",
-  highlights: ["Bullet", "Bullet"],
-  tags: ["Classification", "EDA"],       // drive the filter chips
-  notebooks: [{ label: "EDA", path: "notebooks/eda.ipynb" }],
-  featured: true,                         // optional, renders wide
-}
+{ repo: "my-repo", title: "Title", summary: "One line.", tags: ["EDA"],
+  kaggle: "https://www.kaggle.com/c/...", notebooks: [{ label: "EDA", path: "eda.ipynb" }] }
 ```
 
-Private repositories are shown with curated text only and a "Private repository" pill.
+## Notes
 
-## Run locally
-
-Any static server works, for example:
-
-```bash
-python3 -m http.server 8000
-```
-
-Anonymous GitHub API calls are limited to 60 per hour per IP. Responses are
-cached in `localStorage`, so normal browsing stays well under the limit.
+Anonymous GitHub API calls are limited to 60 per hour per IP; responses
+(including 404s for private repos) are cached in `localStorage` for an hour.
+Run locally with any static server, for example `python3 -m http.server`.
