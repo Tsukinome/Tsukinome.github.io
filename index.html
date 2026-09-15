@@ -7,13 +7,13 @@
   <meta name="description" content="Kaggle projects and data analysis work by Kristina Grigaitytė. A live portfolio that reads its stats straight from GitHub." />
   <meta property="og:title" content="Kristina Grigaitytė · Data portfolio" />
   <meta property="og:description" content="Kaggle projects and data analysis work. A live portfolio that reads its stats straight from GitHub." />
-  <meta property="og:image" content="https://avatars.githubusercontent.com/u/75446070?v=4" />
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/75446070?v=5" />
   <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
   <link rel="preconnect" href="https://api.github.com" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=3" />
+  <link rel="stylesheet" href="css/style.css?v=5" />
   <script>
     // Apply a saved theme before first paint to avoid a flash.
     try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
@@ -36,99 +36,115 @@
   <symbol id="i-sun" viewBox="0 0 16 16"><path fill="currentColor" d="M8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-1.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Zm5.657-8.157a.75.75 0 0 1 0 1.061l-1.061 1.06a.749.749 0 0 1-1.275-.326.749.749 0 0 1 .215-.734l1.06-1.06a.75.75 0 0 1 1.06 0Zm-9.193 9.193a.75.75 0 0 1 0 1.06l-1.06 1.061a.75.75 0 1 1-1.061-1.06l1.06-1.061a.75.75 0 0 1 1.061 0ZM8 0a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0V.75A.75.75 0 0 1 8 0ZM3 8a.75.75 0 0 1-.75.75H.75a.75.75 0 0 1 0-1.5h1.5A.75.75 0 0 1 3 8Zm13 0a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5A.75.75 0 0 1 16 8Zm-8 5a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 8 13Zm3.536-1.464a.75.75 0 0 1 1.06 0l1.061 1.06a.75.75 0 0 1-1.06 1.061l-1.061-1.06a.75.75 0 0 1 0-1.061ZM2.343 2.343a.75.75 0 0 1 1.061 0l1.06 1.061a.751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018l-1.06-1.06a.75.75 0 0 1 0-1.06Z"/></symbol>
 </svg>
 
+<div class="progress" id="progress" aria-hidden="true"></div>
+
 <nav class="nav">
   <div class="wrap">
     <a class="brand" href="#top"><span class="dot"></span><span id="brand-name">Portfolio</span></a>
     <ul class="nav-links">
-      <li><a href="#projects">Kaggle projects</a></li>
-      <li><a href="#activity">Activity</a></li>
-      <li><a href="#how">How it works</a></li>
+      <li><a href="#journey">Journey</a></li>
+      <li><a href="#projects">Kaggle</a></li>
+      <li><a href="#now">Now</a></li>
       <li><a href="#contact">Contact</a></li>
       <li><button class="theme-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode"><svg><use href="#i-sun"/></svg></button></li>
     </ul>
   </div>
 </nav>
 
-<header class="hero" id="top">
-  <div class="stars" aria-hidden="true"></div>
-  <div class="wrap">
+<!-- Chapter dots (filled by app.js) -->
+<nav class="dots" id="dots" aria-label="Chapters"></nav>
+
+<header class="hero chapter" id="top" data-chapter="Prologue">
+  <canvas class="sky" id="sky" aria-hidden="true"></canvas>
+  <div class="wrap hero-wrap">
     <div class="hero-grid">
-      <img class="avatar" id="avatar" alt="" width="148" height="148" />
+      <img class="avatar" id="avatar" alt="" width="156" height="156" />
       <div>
-        <p class="eyebrow">Data analysis · Machine learning · Teaching</p>
+        <p class="eyebrow"><span class="live"></span> <span id="local-time">…</span> <span id="weather"></span></p>
         <h1 id="name">&nbsp;</h1>
-        <p class="tagline" id="tagline"></p>
+        <p class="tagline">I am a <span class="type" id="typewriter"></span><span class="caret"></span></p>
         <p class="intro" id="intro"></p>
         <div class="hero-actions">
-          <a class="btn btn-primary" id="gh-profile" href="#" target="_blank" rel="noopener"><svg><use href="#i-github"/></svg> GitHub profile</a>
+          <a class="btn btn-primary" id="gh-profile" href="#" target="_blank" rel="noopener"><svg><use href="#i-github"/></svg> GitHub</a>
           <a class="btn" id="li-profile" href="#" target="_blank" rel="noopener"><svg><use href="#i-linkedin"/></svg> LinkedIn</a>
-          <a class="btn" href="#projects">See the projects ↓</a>
         </div>
       </div>
     </div>
-
     <div class="stats" id="stats" aria-live="polite">
-      <div class="stat"><div class="label"><span class="live"></span> Public repositories</div><div class="value skel" data-stat="repos">00</div><div class="sub">from GitHub, right now</div></div>
-      <div class="stat"><div class="label"><span class="live"></span> Followers</div><div class="value skel" data-stat="followers">00</div><div class="sub">on GitHub</div></div>
-      <div class="stat"><div class="label"><span class="live"></span> Stars earned</div><div class="value skel" data-stat="stars">00</div><div class="sub">across public repos</div></div>
-      <div class="stat"><div class="label"><span class="live"></span> Last active</div><div class="value skel" data-stat="active">00</div><div class="sub" data-stat="active-sub">most recent push</div></div>
+      <div class="stat"><div class="label">Public repos</div><div class="value skel" data-stat="repos">00</div></div>
+      <div class="stat"><div class="label">Followers</div><div class="value skel" data-stat="followers">00</div></div>
+      <div class="stat"><div class="label">Stars</div><div class="value skel" data-stat="stars">00</div></div>
+      <div class="stat"><div class="label">Public commits this year</div><div class="value skel" data-stat="commits">00</div></div>
     </div>
     <div class="notice" id="notice" role="status"></div>
   </div>
+  <a class="scroll-cue" href="#journey" aria-label="Scroll to the story"><span></span></a>
 </header>
 
 <main>
-  <section id="projects">
+  <section class="chapter" id="journey" data-chapter="Journey">
     <div class="wrap">
-      <p class="eyebrow">Selected work</p>
-      <div class="section-head">
-        <h2>Kaggle projects</h2>
-        <p>Curated descriptions are written by hand. Language mix, activity dates and README text are fetched from each repository when the page loads.</p>
-      </div>
-      <div class="filters" id="filters" role="group" aria-label="Filter projects by topic"></div>
+      <p class="eyebrow reveal">Chapter 01</p>
+      <div class="section-head reveal"><h2>From the lab to the notebook</h2><p>Milestones, with the Kaggle chapters placed by their GitHub dates.</p></div>
+      <ol class="timeline" id="timeline"></ol>
+    </div>
+  </section>
+
+  <section class="chapter" id="projects" data-chapter="Kaggle">
+    <div class="wrap">
+      <p class="eyebrow reveal">Chapter 02</p>
+      <div class="section-head reveal"><h2>The Kaggle years</h2><p>Hover a card. Numbers are live.</p></div>
+      <div class="filters reveal" id="filters" role="group" aria-label="Filter projects by topic"></div>
       <div class="grid" id="project-grid"></div>
     </div>
   </section>
 
-  <section id="activity">
+  <section class="chapter now" id="now" data-chapter="Now">
     <div class="wrap">
-      <p class="eyebrow">Auto-generated</p>
-      <div class="section-head">
-        <h2>Latest activity</h2>
-        <p>The most recently updated public repositories on the account. Nothing here is hand-maintained.</p>
+      <p class="eyebrow reveal">Chapter 03</p>
+      <div class="section-head reveal"><h2>What I'm doing now</h2><p>Straight from the GitHub event stream.</p></div>
+      <div class="now-grid">
+        <div class="panel reveal">
+          <h3>Latest commits</h3>
+          <ol class="feed" id="feed"><li class="skel">loading</li><li class="skel">loading</li><li class="skel">loading</li></ol>
+        </div>
+        <div class="panel reveal">
+          <h3>Languages across the account</h3>
+          <div class="donut-wrap">
+            <div class="donut" id="donut"><div class="donut-hole"><strong id="donut-total">…</strong><small>bytes of code</small></div></div>
+            <ul class="donut-key" id="donut-key"></ul>
+          </div>
+        </div>
       </div>
-      <div class="activity" id="activity-list"></div>
+      <div class="activity reveal" id="activity-list"></div>
     </div>
   </section>
 
-  <section class="how" id="how">
+  <section class="chapter how" id="how" data-chapter="Backstage">
     <div class="wrap">
-      <p class="eyebrow">Behind the page</p>
-      <div class="section-head">
-        <h2>How this portfolio stays current</h2>
-        <p>No build step, no framework, no backend. One HTML file, one stylesheet, two small scripts, hosted free on GitHub Pages.</p>
+      <p class="eyebrow reveal">Chapter 04</p>
+      <div class="section-head reveal"><h2>Backstage</h2><p>One HTML file. No build, no backend.</p></div>
+      <div class="steps reveal">
+        <div class="step"><h3>Curate</h3><p>One config file.</p></div>
+        <div class="step"><h3>Fetch</h3><p>GitHub REST API, no token.</p></div>
+        <div class="step"><h3>Cache</h3><p>One hour, in your browser.</p></div>
+        <div class="step"><h3>Render</h3><p>Markdown to HTML, client-side.</p></div>
       </div>
-      <div class="steps">
-        <div class="step"><h3>Curate in one config</h3><p>Project titles, summaries, highlights and tags live in a single JavaScript object. Adding a project is adding one entry.</p></div>
-        <div class="step"><h3>Fetch live data</h3><p>On load the page calls the public GitHub REST API for the profile, each repository, its language breakdown and its README. No token needed.</p></div>
-        <div class="step"><h3>Cache and degrade gracefully</h3><p>Responses are cached in the browser for an hour to respect the 60 requests per hour limit. Private repos and rate limits show a clear notice instead of a broken card.</p></div>
-        <div class="step"><h3>Render, don't rebuild</h3><p>Markdown READMEs are rendered and sanitised client-side, so updating a project on GitHub updates the portfolio too.</p></div>
+      <div class="meter reveal" id="meter">
+        <span><span class="live"></span> This visit</span>
+        <span><strong id="m-live">0</strong> live calls</span>
+        <span><strong id="m-cache">0</strong> from cache</span>
+        <span><strong id="m-limit">…</strong> API calls left this hour</span>
+        <a id="site-repo" href="#" target="_blank" rel="noopener">Source ↗</a>
       </div>
-      <pre class="codeblock"><code><span class="k">const</span> api = <span class="s">"https://api.github.com/repos/"</span> + user + <span class="s">"/"</span> + repo;
-<span class="k">const</span> [meta, langs] = <span class="k">await</span> Promise.all([
-  cachedFetch(api),                 <span style="opacity:.6">// stars, forks, pushed_at, description</span>
-  cachedFetch(api + <span class="s">"/languages"</span>), <span style="opacity:.6">// { "Jupyter Notebook": 5760053, ... }</span>
-]);
-renderCard(project, meta, langs);   <span style="opacity:.6">// curated text + live numbers</span></code></pre>
-      <p style="margin:1rem 0 0;font-size:.875rem;color:var(--text-muted)">Source for this page: <a id="site-repo" href="#" target="_blank" rel="noopener">view on GitHub</a>. Fork it, edit <code>js/projects.js</code>, and you have your own.</p>
     </div>
   </section>
 
-  <section class="contact" id="contact">
+  <section class="chapter contact" id="contact" data-chapter="Epilogue">
     <div class="wrap">
-      <p class="eyebrow">Get in touch</p>
-      <div class="section-head"><h2>Contact</h2></div>
-      <div class="cards">
+      <p class="eyebrow reveal">Epilogue</p>
+      <div class="section-head reveal"><h2>Say hello</h2></div>
+      <div class="cards reveal">
         <a class="c" id="c-email" href="#"><svg><use href="#i-mail"/></svg><span><small>Email</small><span id="c-email-text"></span></span></a>
         <a class="c" id="c-linkedin" href="#" target="_blank" rel="noopener"><svg><use href="#i-linkedin"/></svg><span><small>LinkedIn</small>Kristina Grigaitytė</span></a>
         <a class="c" id="c-github" href="#" target="_blank" rel="noopener"><svg><use href="#i-github"/></svg><span><small>GitHub</small><span id="c-github-text"></span></span></a>
@@ -143,6 +159,8 @@ renderCard(project, meta, langs);   <span style="opacity:.6">// curated text + l
   <span id="footer-updated"></span>
 </footer>
 
+<div class="cursor-glow" id="glow" aria-hidden="true"></div>
+
 <dialog class="readme" id="readme-modal">
   <div class="modal-head">
     <strong id="readme-title">README.md</strong>
@@ -153,7 +171,7 @@ renderCard(project, meta, langs);   <span style="opacity:.6">// curated text + l
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
-<script src="js/projects.js?v=3"></script>
-<script src="js/app.js?v=3"></script>
+<script src="js/projects.js?v=5"></script>
+<script src="js/app.js?v=5"></script>
 </body>
 </html>

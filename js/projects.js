@@ -1,27 +1,29 @@
 /*
- * Portfolio configuration.
- *
- * Everything hand-written lives here. Everything else on the page
- * (avatar, follower count, language mix, last activity, README text)
- * is fetched live from the GitHub REST API by app.js.
- *
- * To add a project: append an object to PROJECTS. Only `repo` is required.
+ * Portfolio configuration. Hand-written content lives here; everything
+ * else is fetched live from GitHub (and Open-Meteo for the weather).
  */
 
 const SITE = {
   githubUser: "Tsukinome",
   name: "Kristina Grigaitytė",
-  tagline: "Data analyst and educator with a molecular biotechnology background.",
-  intro:
-    "I turn messy datasets into clear, defensible answers. This page is a living " +
-    "portfolio: the numbers and READMEs you see below are pulled from GitHub " +
-    "every time the page loads, so it never goes stale.",
+  roles: ["data analyst", "educator", "ex-biotechnologist", "Kaggle tinkerer"],
+  intro: "From pipettes to pandas. This page tells that story with live data.",
   location: "Vilnius, Lithuania",
+  timezone: "Europe/Vilnius",
+  coords: { lat: 54.69, lon: 25.28 },
   email: "grkristina2@gmail.com",
   linkedin: "https://www.linkedin.com/in/kristina-grigaityt%C4%97/",
-  // Repos to hide from the auto-generated "Latest activity" list.
   hideFromActivity: ["Tsukinome.github.io", "Files"],
 };
+
+/* Static milestones. Kaggle projects and "now" are appended automatically from GitHub. */
+const JOURNEY = [
+  { when: "2016", title: "Microbiology & Biotechnology", note: "BSc, Vilnius University" },
+  { when: "2018", title: "Research intern", note: "VU Life Sciences Center" },
+  { when: "2020", title: "COVID-19 researcher", note: "VU Life Sciences Center" },
+  { when: "2021", title: "Switched to data", note: "Turing College, Data Science" },
+  { when: "2022", title: "Molecular Biotechnology", note: "MSc, Vilnius University" },
+];
 
 const PROJECTS = [
   {
@@ -29,19 +31,12 @@ const PROJECTS = [
     title: "Home Credit Default Risk",
     kaggle: "https://www.kaggle.com/c/home-credit-default-risk",
     kaggleLabel: "Featured competition",
-    summary:
-      "Binary classification of loan repayment difficulty across seven linked " +
-      "tables: application data, bureau records, credit card balances and " +
-      "previous applications.",
-    highlights: [
-      "Merged and aggregated seven relational files into one training matrix",
-      "Compared Random Forest, XGBoost and LightGBM with hyperparameter search",
-      "Three separate Kaggle submissions kept for side-by-side scoring",
-    ],
-    tags: ["Classification", "Gradient boosting", "Feature engineering", "EDA"],
+    summary: "Will this applicant struggle to repay? Seven tables, one answer.",
+    highlights: ["7 relational files merged", "RF vs XGBoost vs LightGBM"],
+    tags: ["Classification", "Gradient boosting", "Feature engineering"],
     notebooks: [
-      { label: "EDA notebook", path: "EDA and models/Credit EDA.ipynb" },
-      { label: "Models notebook", path: "EDA and models/Models.ipynb" },
+      { label: "EDA", path: "EDA and models/Credit EDA.ipynb" },
+      { label: "Models", path: "EDA and models/Models.ipynb" },
     ],
     featured: true,
   },
@@ -49,53 +44,35 @@ const PROJECTS = [
     repo: "Kaggle-Overfit",
     title: "Don't Overfit! II",
     kaggle: "https://www.kaggle.com/c/dont-overfit-ii",
-    kaggleLabel: "Playground competition",
-    summary:
-      "250 training rows, 19,750 test rows and 300 anonymous features. The " +
-      "whole challenge is generalising from almost nothing without fooling " +
-      "yourself.",
-    highlights: [
-      "Heavy regularisation and feature selection instead of model complexity",
-      "Cross-validation strategy designed around a tiny training set",
-      "Experiment tracking with Neptune to keep runs comparable",
-    ],
-    tags: ["Classification", "Regularisation", "Experiment tracking", "EDA"],
+    kaggleLabel: "Playground",
+    summary: "250 rows, 300 features. Generalise without fooling yourself.",
+    highlights: ["Regularisation over complexity", "Runs tracked in Neptune"],
+    tags: ["Classification", "Regularisation"],
     notebooks: [
-      { label: "EDA notebook", path: "Modelling and EDA/EDA.ipynb" },
-      { label: "Models notebook", path: "Modelling and EDA/Models.ipynb" },
+      { label: "EDA", path: "Modelling and EDA/EDA.ipynb" },
+      { label: "Models", path: "Modelling and EDA/Models.ipynb" },
     ],
   },
   {
     repo: "Kaggle-Ames-2.0",
-    title: "House Prices: Advanced Regression",
+    title: "House Prices",
     kaggle: "https://www.kaggle.com/c/house-prices-advanced-regression-techniques",
-    kaggleLabel: "Getting started competition",
-    summary:
-      "Predicting sale prices for homes in Ames, Iowa from 79 descriptive " +
-      "features. A classic regression benchmark used here to compare model " +
-      "families on the same data.",
-    highlights: [
-      "Gradient Boosting, XGBoost and an MLP regressor on identical folds",
-      "Log-transformed target and careful handling of ordinal categories",
-      "Focus on understanding model behaviour rather than leaderboard rank",
-    ],
-    tags: ["Regression", "Gradient boosting", "Neural nets", "EDA"],
-    notebooks: [{ label: "Analysis notebook", path: "Analysis/Ames.ipynb" }],
+    kaggleLabel: "Getting started",
+    summary: "79 features of a house in Ames, Iowa. Guess the price.",
+    highlights: ["GBM, XGBoost, MLP on identical folds", "Log target"],
+    tags: ["Regression", "Gradient boosting", "Neural nets"],
+    notebooks: [{ label: "Notebook", path: "Analysis/Ames.ipynb" }],
+    started: "2021-07",
   },
   {
     repo: "Covid-Korea",
     title: "COVID-19 in South Korea",
     kaggle: "https://www.kaggle.com/kimjihoo/coronavirusdataset",
-    kaggleLabel: "Kaggle dataset",
-    summary:
-      "Exploratory analysis of the Korean outbreak data with one practical " +
-      "question in mind: what would a response plan for Lithuania look like?",
-    highlights: [
-      "Hypothesis tests on transmission routes and patient demographics",
-      "Clustering of regions by outbreak dynamics",
-      "Analysis written for a policy audience, not just a technical one",
-    ],
-    tags: ["EDA", "Statistics", "Clustering", "Public health"],
-    notebooks: [{ label: "Full notebook", path: "covid.ipynb" }],
+    kaggleLabel: "Dataset",
+    summary: "What would a response plan for Lithuania look like?",
+    highlights: ["Hypothesis tests", "Regional clustering"],
+    tags: ["EDA", "Statistics", "Clustering"],
+    notebooks: [{ label: "Notebook", path: "covid.ipynb" }],
+    started: "2021-10",
   },
 ];
