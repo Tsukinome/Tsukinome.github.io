@@ -4,16 +4,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kristina Grigaitytė · Data portfolio</title>
-  <meta name="description" content="Kaggle projects and data analysis work by Kristina Grigaitytė. A live portfolio that reads its stats straight from GitHub." />
+  <meta name="description" content="Data, ML and AI-engineering work by Kristina Grigaitytė. A live portfolio that reads its stats straight from GitHub." />
   <meta property="og:title" content="Kristina Grigaitytė · Data portfolio" />
-  <meta property="og:description" content="Kaggle projects and data analysis work. A live portfolio that reads its stats straight from GitHub." />
-  <meta property="og:image" content="https://avatars.githubusercontent.com/u/75446070?v=11" />
+  <meta property="og:description" content="Data, ML and AI-engineering work. A live portfolio that reads its stats straight from GitHub." />
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/75446070?v=12" />
   <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
   <link rel="preconnect" href="https://api.github.com" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=11" />
+  <link rel="stylesheet" href="css/style.css?v=12" />
   <script>
     // Apply a saved theme before first paint to avoid a flash.
     try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
@@ -43,8 +43,9 @@
     <a class="brand" href="#top"><span class="dot"></span><span id="brand-name">Portfolio</span></a>
     <ul class="nav-links">
       <li><a href="#journey">Journey</a></li>
-      <li><a href="#projects">Kaggle</a></li>
-      <li><a href="#builds">Builds</a></li>
+      <li><a href="#data">Data</a></li>
+      <li><a href="#ai">AI</a></li>
+      <li><a href="#apps">Apps</a></li>
       <li><a href="#contact">Contact</a></li>
       <li><button class="kbd-btn" id="palette-btn" type="button" aria-label="Open command palette"><kbd>⌘</kbd><kbd>K</kbd></button></li>
       <li><button class="theme-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode"><svg><use href="#i-sun"/></svg></button></li>
@@ -88,7 +89,7 @@
   <section class="chapter" id="journey" data-chapter="Journey">
     <div class="wrap">
       <p class="eyebrow reveal">Chapter 01</p>
-      <div class="section-head reveal"><h2>From the lab to the notebook</h2><p>Milestones, with the Kaggle chapters placed by their GitHub dates.</p></div>
+      <div class="section-head reveal"><h2>From the lab to the notebook</h2><p>Milestones, with projects placed by their GitHub creation dates.</p></div>
       <ol class="timeline" id="timeline"></ol>
       <div class="heat reveal" id="heat">
         <div class="heat-head"><span class="eyebrow" style="margin:0"><span class="live"></span> Last 12 months of public commits</span><span class="heat-total" id="heat-total">…</span></div>
@@ -98,21 +99,30 @@
     </div>
   </section>
 
-  <section class="chapter" id="projects" data-chapter="Kaggle">
+  <section class="chapter" id="data" data-chapter="Data">
     <div class="wrap">
       <p class="eyebrow reveal">Chapter 02</p>
-      <div class="section-head reveal"><h2>The Kaggle years</h2><p>Hover a card. Numbers are live.</p></div>
-      <div class="filters reveal" data-filters="kaggle" role="group" aria-label="Filter Kaggle projects by topic"></div>
-      <div class="grid" data-grid="kaggle"></div>
+      <div class="section-head reveal"><h2>Data &amp; ML</h2><p>Scrapers, a model, and the API in front of it. Hover a card; numbers are live.</p></div>
+      <div class="filters reveal" data-filters="data" role="group" aria-label="Filter data projects by topic"></div>
+      <div class="grid" data-grid="data"></div>
     </div>
   </section>
 
-  <section class="chapter" id="builds" data-chapter="Builds">
+  <section class="chapter" id="ai" data-chapter="AI">
     <div class="wrap">
       <p class="eyebrow reveal">Chapter 03</p>
-      <div class="section-head reveal"><h2>Things I built</h2><p>Scrapers, models behind APIs, and small apps I actually use. Private ones show live stats when a proxy is available.</p></div>
-      <div class="filters reveal" data-filters="build" role="group" aria-label="Filter builds by topic"></div>
-      <div class="grid" data-grid="build"></div>
+      <div class="section-head reveal"><h2>AI engineering &amp; teaching</h2><p>What I build for the room I teach in.</p></div>
+      <div class="filters reveal" data-filters="ai" role="group" aria-label="Filter AI projects by topic"></div>
+      <div class="grid" data-grid="ai"></div>
+    </div>
+  </section>
+
+  <section class="chapter" id="apps" data-chapter="Apps">
+    <div class="wrap">
+      <p class="eyebrow reveal">Chapter 04</p>
+      <div class="section-head reveal"><h2>Small apps I use</h2><p>Private repos. Live stats appear when a proxy is available; code on request.</p></div>
+      <div class="filters reveal" data-filters="apps" role="group" aria-label="Filter apps by topic"></div>
+      <div class="grid" data-grid="apps"></div>
     </div>
   </section>
 
@@ -154,7 +164,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
-<script src="js/projects.js?v=11"></script>
-<script src="js/app.js?v=11"></script>
+<script src="js/projects.js?v=12"></script>
+<script src="js/app.js?v=12"></script>
 </body>
 </html>

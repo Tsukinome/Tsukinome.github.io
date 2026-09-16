@@ -230,8 +230,9 @@ function renderTimeline(repos) {
   for (const p of PROJECTS) {
     const iso = byName[p.repo]?.created_at?.slice(0, 7) || p.started;
     if (!iso) continue;
-    const isKaggle = (p.group || "kaggle") === "kaggle";
-    items.push({ when: new Date(iso + "-01").toLocaleDateString("en", { month: "short", year: "numeric" }), title: p.title, note: isKaggle ? "Kaggle · " + (p.kaggleLabel || "project") : "Built · " + (p.tags?.[0] || "project"), sort: iso, kaggle: isKaggle, build: !isKaggle, href: isKaggle ? "#projects" : "#builds" });
+    const g = p.group || "data";
+    const label = { data: "Data & ML", ai: "AI & teaching", apps: "App" }[g] || "Project";
+    items.push({ when: new Date(iso + "-01").toLocaleDateString("en", { month: "short", year: "numeric" }), title: p.title, note: `${label} · ${p.tags?.[0] || "project"}`, sort: iso, kaggle: g === "data", build: g !== "data", href: `#${g}` });
   }
   const latest = repos[0];
   if (latest) items.push({ when: "Now", title: `Working on ${latest.name}`, note: `last push ${relTime(latest.pushed_at)}`, sort: "9999", now: true, href: latest.html_url });
@@ -361,7 +362,7 @@ function renderProjects() {
   const all = [];
   for (const grid of $$("[data-grid]")) {
     const group = grid.dataset.grid;
-    const items = PROJECTS.filter((p) => (p.group || "kaggle") === group);
+    const items = PROJECTS.filter((p) => (p.group || "data") === group);
     const cards = items.map((p) => { const c = projectCard(p); grid.append(c); return [p, c]; });
     renderFilters($(`[data-filters="${group}"]`), items, cards.map(([, c]) => c));
     all.push(...cards);
@@ -414,7 +415,7 @@ function buildPalette() {
   const gh = `https://github.com/${SITE.githubUser}`;
   pItems = [
     ...$$(".chapter").map((c) => ({ group: "Chapter", label: c.dataset.chapter, hint: c.querySelector("h1, h2")?.textContent || "", run: () => c.scrollIntoView({ behavior: "smooth" }) })),
-    ...PROJECTS.map((p) => ({ group: (p.group || "kaggle") === "kaggle" ? "Kaggle" : "Build", label: p.title, hint: p.private ? p.repo + " · private" : p.repo, run: () => p.private ? $("#builds").scrollIntoView({ behavior: "smooth" }) : open(`${gh}/${p.repo}`, "_blank", "noopener") })),
+    ...PROJECTS.map((p) => ({ group: { data: "Data", ai: "AI", apps: "App" }[p.group] || "Project", label: p.title, hint: p.private ? p.repo + " · private" : p.repo, run: () => p.private ? $(`#${p.group || "data"}`)?.scrollIntoView({ behavior: "smooth" }) : open(`${gh}/${p.repo}`, "_blank", "noopener") })),
     ...repoCache.filter((r) => !r.fork && !PROJECTS.some((p) => p.repo === r.name) && !(SITE.hideFromActivity || []).includes(r.name)).slice(0, 8).map((r) => ({ group: "Repo", label: r.name, hint: r.description || relTime(r.pushed_at), run: () => open(r.html_url, "_blank", "noopener") })),
     { group: "Action", label: "Toggle light / dark", hint: "theme", run: toggleTheme },
     { group: "Action", label: "Copy email", hint: SITE.email, run: () => navigator.clipboard?.writeText(SITE.email) },

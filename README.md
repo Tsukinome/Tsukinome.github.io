@@ -1,7 +1,9 @@
 # tsukinome.github.io
 
 Live at **https://tsukinome.github.io/**. A one-page portfolio told as a story,
-with almost everything on it fetched at load time.
+with almost everything on it fetched at load time. Also deployed on Cloudflare
+Pages, where a small function proxies GitHub calls and serves allow-listed
+private repos.
 
 ## Live features
 
@@ -12,7 +14,7 @@ with almost everything on it fetched at load time.
 | Latest commits feed | GitHub `repos/*/commits` for the 4 most active repos |
 | Language donut across the account | GitHub `repos/*/languages` |
 | Per-project stats, language bar, README modal | GitHub `repos/*`, `languages`, `readme` |
-| Journey timeline dates for Kaggle projects | GitHub repo `created_at` |
+| Journey timeline dates for projects | GitHub repo `created_at` |
 | Local time and greeting | `Intl` with `Europe/Vilnius` |
 | Weather in Vilnius | Open-Meteo, no key |
 | API meter (live calls, cache hits, remaining quota) | Rate-limit headers |
@@ -29,7 +31,8 @@ scroll progress bar, chapter dots. All of it respects `prefers-reduced-motion`.
 | `css/style.css` | Twilight theme, light theme via toggle |
 | `js/projects.js` | **Edit this.** Site info, journey milestones, projects |
 | `js/app.js` | Fetching, caching, rendering, motion |
-| `.github/workflows/pages.yml` | Deploys on push to `main` |
+| `.github/workflows/pages.yml` | Deploys to GitHub Pages on push to `main` |
+| `functions/api/gh/[[path]].js` | Cloudflare Pages Function: cached GitHub proxy with a private-repo allow-list |
 
 ## Add a project
 

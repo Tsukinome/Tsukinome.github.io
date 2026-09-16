@@ -20,7 +20,7 @@
  */
 
 const OWNER = "Tsukinome";
-const PRIVATE_ALLOWED = new Set(["Kaggle-Ames-2.0", "Covid-Korea", "loan", "weekly-board"]);
+const PRIVATE_ALLOWED = new Set(["loan", "weekly-board", "w11-task-wall"]);
 const EDGE_TTL = 3600;      // seconds a GitHub response stays in Cloudflare's cache
 const BROWSER_TTL = 300;    // seconds the browser may reuse it
 
