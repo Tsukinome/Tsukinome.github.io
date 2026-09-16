@@ -444,3 +444,26 @@ kbd { font-family: var(--mono); font-size: .68rem; padding: .05rem .3rem; border
 .tl.build::before { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 40%, var(--bg)); box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 50%, transparent); }
 footer { gap: .5rem 1.5rem; }
 #footer-host { font-family: var(--mono); font-size: .72rem; color: var(--accent); }
+
+/* code browser */
+dialog.codebrowser { width: min(1100px, 100% - 2rem); height: min(82vh, 860px); padding: 0; border: 1px solid var(--line); border-radius: 16px; background: var(--bg-elev); color: var(--text); box-shadow: var(--shadow); display: none; flex-direction: column; overflow: hidden; }
+dialog.codebrowser[open] { display: flex; }
+dialog.codebrowser::backdrop { background: rgba(5,5,15,.6); backdrop-filter: blur(4px); }
+.codebrowser .modal-head { flex: none; gap: .8rem; }
+.codebrowser .modal-head strong { flex: 1; }
+.code-body { display: grid; grid-template-columns: 280px 1fr; flex: 1; min-height: 0; }
+@media (max-width: 760px) { .code-body { grid-template-columns: 1fr; grid-template-rows: 35% 1fr; } }
+.code-tree { border-right: 1px solid var(--line); overflow-y: auto; padding: .4rem; background: var(--bg-sunken); }
+.code-tree-head { font-family: var(--mono); font-size: .7rem; color: var(--text-faint); padding: .5rem .6rem; letter-spacing: .04em; }
+.code-file { display: flex; align-items: baseline; gap: .3rem; width: 100%; text-align: left; border: 0; background: none; color: var(--text-muted); font: inherit; font-size: .8rem; padding: .35rem .6rem; border-radius: 8px; cursor: pointer; font-family: var(--mono); }
+.code-file:hover { background: var(--bg-elev); color: var(--text); }
+.code-file.active { background: var(--accent-soft); color: var(--accent); }
+.code-file-dir { color: var(--text-faint); font-size: .7rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 45%; }
+.code-file-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.code-file-size { font-size: .68rem; color: var(--text-faint); }
+.code-view { display: flex; flex-direction: column; min-height: 0; }
+.code-path { font-family: var(--mono); font-size: .75rem; color: var(--text-muted); padding: .6rem 1rem; border-bottom: 1px solid var(--line); flex: none; }
+#code-pre { margin: 0; flex: 1; overflow: auto; padding: 1rem 1.2rem; font-size: .78rem; line-height: 1.55; tab-size: 4; background: transparent; color: var(--text); }
+#code-pre code { font-family: var(--mono); white-space: pre; }
+.code-empty { padding: 1rem; color: var(--text-muted); font-size: .85rem; }
+.btn[hidden] { display: none; }

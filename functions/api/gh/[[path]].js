@@ -13,6 +13,8 @@
  *   repos/<OWNER>/<name>/languages
  *   repos/<OWNER>/<name>/readme
  *   repos/<OWNER>/<name>/commits?...
+ *   repos/<OWNER>/<name>/git/trees/<ref>?recursive=1   file list for the code browser
+ *   repos/<OWNER>/<name>/contents/<path>                one file (base64, <= 300 KB)
  *   search/commits?q=author:<OWNER>...
  *
  * Private repositories are served only if listed in PRIVATE_ALLOWED. The token
@@ -30,10 +32,15 @@ const json = (body, status = 200, extra = {}) =>
     headers: { "content-type": "application/json; charset=utf-8", "cache-control": status === 200 ? `public, max-age=${BROWSER_TTL}` : "no-store", ...extra },
   });
 
-const SAFE_QUERY = new Set(["per_page", "sort", "since", "author", "q", "page", "direction", "type"]);
+const SAFE_QUERY = new Set(["per_page", "sort", "since", "author", "q", "page", "direction", "type", "recursive", "ref"]);
+const MAX_FILE_BYTES = 300 * 1024;
 
 function route(parts, query) {
   const [a, b, c, d, ...rest] = parts;
+  if (a === "repos" && b === OWNER && c && d === "git" && rest[0] === "trees" && rest[1] && rest.length === 2)
+    return { kind: "tree", name: c, path: `repos/${OWNER}/${c}/git/trees/${encodeURIComponent(rest[1])}` };
+  if (a === "repos" && b === OWNER && c && d === "contents" && rest.length)
+    return { kind: "file", name: c, path: `repos/${OWNER}/${c}/contents/${rest.map(encodeURIComponent).join("/")}` };
   if (rest.length) return null;
   if (a === "ping" && !b) return { kind: "ping" };
   if (a === "users" && b === OWNER && !c) return { kind: "user", path: `users/${OWNER}` };
@@ -98,6 +105,12 @@ export async function onRequestGet({ request, env, params }) {
   else if (r.kind === "readme") body = { content: data.content, encoding: data.encoding, html_url: data.html_url };
   else if (r.kind === "commits") body = data.map((c) => ({ sha: c.sha, html_url: c.html_url, commit: { message: c.commit.message, author: { date: c.commit.author?.date } } }));
   else if (r.kind === "search") body = { total_count: data.total_count };
+  else if (r.kind === "tree") body = { truncated: data.truncated, tree: data.tree.filter((t) => t.type === "blob").map((t) => ({ path: t.path, size: t.size })) };
+  else if (r.kind === "file") {
+    if (Array.isArray(data)) return json({ message: "Path is a directory" }, 400);
+    if (data.size > MAX_FILE_BYTES) return json({ message: `File too large to preview (${data.size} bytes)` }, 413);
+    body = { path: data.path, size: data.size, content: data.content, encoding: data.encoding, html_url: data.html_url };
+  }
   else if (r.kind === "user") body = { login: data.login, name: data.name, avatar_url: data.avatar_url, public_repos: data.public_repos, followers: data.followers, html_url: data.html_url };
   else body = data;
 

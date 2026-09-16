@@ -317,7 +317,8 @@ function projectCard(p) {
       el("div", { class: "langbar skel", "data-role": "langbar" }),
     ]),
     el("div", { class: "card-foot" }, p.private ? [
-      el("a", { class: "btn btn-sm", href: `mailto:${SITE.email}?subject=${encodeURIComponent("Code request: " + p.repo)}` }, [icon("i-mail"), "Code on request"]),
+      el("button", { class: "btn btn-sm btn-primary", type: "button", "data-role": "browse", hidden: "", onclick: () => openCode(p) }, [icon("i-github"), "Browse code"]),
+      el("a", { class: "btn btn-sm", href: `mailto:${SITE.email}?subject=${encodeURIComponent("Code request: " + p.repo)}`, "data-role": "request" }, [icon("i-mail"), "Code on request"]),
       el("button", { class: "btn btn-sm", type: "button", "data-role": "readme", onclick: () => openReadme(p) }, [icon("i-book"), "README"]),
     ] : [
       el("a", { class: "btn btn-sm", href: repoUrl, target: "_blank", rel: "noopener" }, [icon("i-github"), "Code"]),
@@ -333,7 +334,13 @@ async function hydrateCard(p, card) {
   try {
     const [repo, langs] = await Promise.all([cachedFetch(base), cachedFetch(`${base}/languages`)]);
     status.textContent = p.private ? "Private" : repo.license?.spdx_id && repo.license.spdx_id !== "NOASSERTION" ? repo.license.spdx_id : "Public";
-    if (p.private) { status.classList.add("private"); status.title = "Stats served through a read-only proxy; the code itself stays private."; }
+    if (p.private) {
+      status.classList.add("private"); status.title = "Served through a read-only proxy; the repository itself stays private.";
+      status.textContent = "Private · via proxy";
+      const b = $('[data-role="browse"]', card); if (b) b.hidden = false;
+      const q = $('[data-role="request"]', card); if (q) q.remove();
+      card.dataset.branch = repo.default_branch || "main";
+    }
     meta.replaceChildren(
       el("span", {}, [icon("i-star"), String(repo.stargazers_count)]),
       el("span", {}, [icon("i-fork"), String(repo.forks_count)]),
@@ -380,6 +387,48 @@ function renderFilters(bar, items, cards) {
   };
   bar.replaceChildren(...["All", ...tags].map((t) => el("button", { class: "chip", type: "button", "aria-pressed": "false", onclick: () => { active = t; apply(); } }, t)));
   apply();
+}
+
+/* ---------- code browser (private repos through the proxy) ---------- */
+const codeModal = $("#code-modal");
+$("#code-close").addEventListener("click", () => codeModal.close());
+codeModal.addEventListener("click", (e) => { if (e.target === codeModal) codeModal.close(); });
+const fmtBytes = (n) => (n < 1024 ? `${n} B` : n < 1048576 ? `${(n / 1024).toFixed(1)} KB` : `${(n / 1048576).toFixed(1)} MB`);
+const decodeB64 = (b64) => new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\n/g, "")), (c) => c.charCodeAt(0)));
+async function openCode(p) {
+  const tree = $("#code-tree"), pre = $("#code-content"), pathEl = $("#code-path");
+  $("#code-title").textContent = p.repo;
+  tree.innerHTML = '<div class="skel" style="height:1em;margin:.4rem">x</div>'.repeat(8);
+  pre.textContent = ""; pathEl.textContent = "Pick a file";
+  codeModal.showModal();
+  try {
+    const branch = document.querySelector(`[data-tags]`)?.closest("article") && (PROJECTS.find((x) => x.repo === p.repo) && $$(".card").find((c) => c.querySelector("h3")?.textContent === p.title)?.dataset.branch) || "main";
+    const data = await cachedFetch(`${repoBase(p)}/git/trees/${branch}?recursive=1`);
+    const files = data.tree.filter((f) => !/(^|\/)(node_modules|dist|\.git|package-lock\.json)(\/|$)/.test(f.path)).sort((a, b) => a.path.localeCompare(b.path));
+    tree.replaceChildren(
+      el("div", { class: "code-tree-head" }, `${files.length} files${data.truncated ? " (truncated)" : ""}`),
+      ...files.map((f) => el("button", { type: "button", class: "code-file", title: f.path, onclick: (e) => { for (const b of tree.querySelectorAll(".code-file")) b.classList.remove("active"); e.currentTarget.classList.add("active"); openFile(p, f); } }, [
+        el("span", { class: "code-file-dir" }, f.path.includes("/") ? f.path.slice(0, f.path.lastIndexOf("/") + 1) : ""),
+        el("span", { class: "code-file-name" }, f.path.split("/").pop()),
+        el("span", { class: "code-file-size" }, fmtBytes(f.size || 0)),
+      ]))
+    );
+    const first = files.find((f) => /readme\.md$/i.test(f.path)) || files.find((f) => /\.(py|js|ts|tsx|html)$/.test(f.path)) || files[0];
+    if (first) { tree.querySelector(`.code-file[title="${first.path.replace(/"/g, '\\"')}"]`)?.classList.add("active"); openFile(p, first); }
+  } catch (e) {
+    tree.replaceChildren(el("p", { class: "code-empty" }, e.status === 404 ? "The proxy token has no access to this repository yet." : "Could not load the file list."));
+  }
+}
+async function openFile(p, f) {
+  const pre = $("#code-content"), pathEl = $("#code-path");
+  pathEl.textContent = `${f.path} · ${fmtBytes(f.size || 0)}`;
+  pre.textContent = "loading…";
+  if (/\.(png|jpe?g|gif|webp|ico|pdf|pkl|zip|woff2?)$/i.test(f.path)) { pre.textContent = "Binary file, no preview."; return; }
+  try {
+    const d = await cachedFetch(`${repoBase(p)}/contents/${f.path.split("/").map(encodeURIComponent).join("/")}`);
+    pre.textContent = decodeB64(d.content);
+    $("#code-pre").scrollTop = 0;
+  } catch (e) { pre.textContent = e.status === 413 ? "File too large to preview." : "Could not load this file."; }
 }
 
 /* ---------- README modal ---------- */

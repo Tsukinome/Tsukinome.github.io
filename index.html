@@ -7,13 +7,13 @@
   <meta name="description" content="Data, ML and AI-engineering work by Kristina Grigaitytė. A live portfolio that reads its stats straight from GitHub." />
   <meta property="og:title" content="Kristina Grigaitytė · Data portfolio" />
   <meta property="og:description" content="Data, ML and AI-engineering work. A live portfolio that reads its stats straight from GitHub." />
-  <meta property="og:image" content="https://avatars.githubusercontent.com/u/75446070?v=12" />
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/75446070?v=13" />
   <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
   <link rel="preconnect" href="https://api.github.com" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=12" />
+  <link rel="stylesheet" href="css/style.css?v=13" />
   <script>
     // Apply a saved theme before first paint to avoid a flash.
     try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
@@ -154,6 +154,21 @@
   <div class="palette-foot"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>↵</kbd> select</span><span><kbd>esc</kbd> close</span></div>
 </dialog>
 
+<dialog class="codebrowser" id="code-modal">
+  <div class="modal-head">
+    <strong id="code-title">repo</strong>
+    <span class="pill private" title="Read through the proxy; the repository itself stays private">Private · via proxy</span>
+    <button class="btn btn-sm" type="button" id="code-close">Close</button>
+  </div>
+  <div class="code-body">
+    <aside class="code-tree" id="code-tree"></aside>
+    <section class="code-view">
+      <div class="code-path" id="code-path">Pick a file</div>
+      <pre id="code-pre"><code id="code-content"></code></pre>
+    </section>
+  </div>
+</dialog>
+
 <dialog class="readme" id="readme-modal">
   <div class="modal-head">
     <strong id="readme-title">README.md</strong>
@@ -164,7 +179,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
-<script src="js/projects.js?v=12"></script>
-<script src="js/app.js?v=12"></script>
+<script src="js/projects.js?v=13"></script>
+<script src="js/app.js?v=13"></script>
 </body>
 </html>
