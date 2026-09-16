@@ -117,10 +117,12 @@ async function hostBadge() {
   const host = h.endsWith("github.io") ? "GitHub Pages" : h.endsWith("pages.dev") || h.endsWith("workers.dev") ? "Cloudflare Pages" : h === "localhost" || h === "127.0.0.1" ? "local server" : h;
   let mode;
   if (proxyState.on) {
-    let access = "checking private repo access…";
+    let access = "checking private repos…";
     try {
-      const first = PROJECTS.find((p) => p.private);
-      if (first) { const r = await fetch(`${SITE.proxy}repos/${SITE.githubUser}/${first.repo}`); access = r.ok ? "private repos live" : r.status === 404 ? "token has no access to the private repos" : `proxy error ${r.status}`; }
+      const privates = PROJECTS.filter((p) => p.private);
+      const results = await Promise.all(privates.map((p) => fetch(`${SITE.proxy}repos/${SITE.githubUser}/${p.repo}`).then((r) => r.ok).catch(() => false)));
+      const ok = results.filter(Boolean).length;
+      access = ok === privates.length ? `all ${ok} private repos live` : ok ? `${ok} of ${privates.length} private repos live · token lacks access to the rest` : "token has no access to the private repos";
     } catch (e) { access = "proxy unreachable"; }
     mode = `GitHub via proxy · shared cache · ${access}`;
   } else if (proxyState.deployed) mode = "proxy deployed · GITHUB_TOKEN not set · direct GitHub, 60 calls/hour";
