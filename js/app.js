@@ -13,6 +13,7 @@
 const API = "https://api.github.com";
 const TTL_GH = 60 * 60 * 1000;
 const TTL_WX = 30 * 60 * 1000;
+const TTL_MISS = 2 * 60 * 1000; // a 404 is remembered only briefly, so access changes show up fast
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const TOUCH = matchMedia("(hover: none)").matches;
 
@@ -60,7 +61,7 @@ async function cachedFetch(url, ttl = TTL_GH, headers = { Accept: "application/v
   const key = "gh:" + url;
   try {
     const hit = JSON.parse(localStorage.getItem(key));
-    if (hit && Date.now() - hit.t < ttl) {
+    if (hit && Date.now() - hit.t < (hit.s === 404 ? TTL_MISS : ttl)) {
       if (hit.s === 404) throw Object.assign(new Error("not found (cached)"), { status: 404 });
       return hit.v;
     }
