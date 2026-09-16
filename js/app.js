@@ -339,8 +339,8 @@ async function hydrateCard(p, card) {
       status.textContent = "Private · via proxy";
       const b = $('[data-role="browse"]', card); if (b) b.hidden = false;
       const q = $('[data-role="request"]', card); if (q) q.remove();
-      card.dataset.branch = repo.default_branch || "main";
     }
+    p.branch = repo.default_branch || "main";
     meta.replaceChildren(
       el("span", {}, [icon("i-star"), String(repo.stargazers_count)]),
       el("span", {}, [icon("i-fork"), String(repo.forks_count)]),
@@ -402,8 +402,7 @@ async function openCode(p) {
   pre.textContent = ""; pathEl.textContent = "Pick a file";
   codeModal.showModal();
   try {
-    const branch = document.querySelector(`[data-tags]`)?.closest("article") && (PROJECTS.find((x) => x.repo === p.repo) && $$(".card").find((c) => c.querySelector("h3")?.textContent === p.title)?.dataset.branch) || "main";
-    const data = await cachedFetch(`${repoBase(p)}/git/trees/${branch}?recursive=1`);
+    const data = await cachedFetch(`${repoBase(p)}/git/trees/${p.branch || "main"}?recursive=1`);
     const files = data.tree.filter((f) => !/(^|\/)(node_modules|dist|\.git|package-lock\.json)(\/|$)/.test(f.path)).sort((a, b) => a.path.localeCompare(b.path));
     tree.replaceChildren(
       el("div", { class: "code-tree-head" }, `${files.length} files${data.truncated ? " (truncated)" : ""}`),
