@@ -66,6 +66,7 @@ async function cachedFetch(url, ttl = TTL_GH, headers = { Accept: "application/v
     }
   } catch (e) { if (e.status === 404) throw e; }
   const res = await fetch(url, { headers });
+  const ghRem = res.headers.get("x-gh-remaining"); if (ghRem) proxyState.remaining = Number(ghRem);
   if (res.status === 403 || res.status === 429) {
     if (res.headers.get("x-ratelimit-remaining") === "0") rateLimited = true;
     throw Object.assign(new Error("rate limited"), { status: res.status });
@@ -80,8 +81,18 @@ async function cachedFetch(url, ttl = TTL_GH, headers = { Accept: "application/v
   try { localStorage.setItem(key, JSON.stringify({ t: Date.now(), v: data })); } catch (e) {}
   return data;
 }
-// Private repos go through the same-origin proxy; public ones straight to GitHub.
-const repoBase = (p) => (p.private && SITE.proxy ? `${location.origin}${SITE.proxy}${p.repo}` : `${API}/repos/${SITE.githubUser}/${p.repo}`);
+/* ---------- GitHub URL builder: proxy when available, direct otherwise ---------- */
+const proxyState = { on: false, token: false, remaining: null };
+async function detectProxy() {
+  if (!SITE.proxy) return;
+  try {
+    const r = await fetch(`${SITE.proxy}ping`, { cache: "no-store" });
+    if (r.ok && /json/i.test(r.headers.get("content-type") || "")) { const d = await r.json(); proxyState.on = d.ok === true && d.tokenConfigured === true; proxyState.token = d.tokenConfigured === true; proxyState.deployed = d.ok === true; }
+  } catch (e) {}
+}
+// gh("users/X/repos?per_page=100") -> proxied or direct absolute URL
+const gh = (path) => (proxyState.on ? `${location.origin}${SITE.proxy}${path}` : `${API}/${path}`);
+const repoBase = (p) => gh(`repos/${SITE.githubUser}/${p.repo}`);
 function showNotice(text) { const n = $("#notice"); n.textContent = text; n.classList.add("show"); }
 
 /* ---------- static text ---------- */
@@ -98,25 +109,22 @@ function renderStatic() {
   $("#c-location").textContent = SITE.location;
   $("#avatar").alt = SITE.name;
   $("#avatar").src = `https://github.com/${SITE.githubUser}.png?size=320`;
-  hostBadge();
 }
-/* Says which host serves this copy and whether private repos can be proxied. Handy for side-by-side demos. */
+/* Says which host serves this copy and what it can show. Handy for side-by-side demos. */
 async function hostBadge() {
   const h = location.hostname;
   const host = h.endsWith("github.io") ? "GitHub Pages" : h.endsWith("pages.dev") || h.endsWith("workers.dev") ? "Cloudflare Pages" : h === "localhost" || h === "127.0.0.1" ? "local server" : h;
-  let proxy = "no proxy · private repos hidden";
-  try {
-    const first = PROJECTS.find((p) => p.private);
-    if (first && SITE.proxy) {
-      const r = await fetch(`${SITE.proxy}${first.repo}`, { method: "GET" });
-      if (/json/i.test(r.headers.get("content-type") || ""))
-        proxy = r.ok ? "proxy on · private repos live"
-          : r.status === 503 ? "proxy deployed · token not set"
-          : r.status === 404 ? "proxy on · token has no access to the private repos"
-          : `proxy error ${r.status}`;
-    }
-  } catch (e) {}
-  $("#footer-host").textContent = `Served by ${host} · ${proxy}`;
+  let mode;
+  if (proxyState.on) {
+    let access = "checking private repo access…";
+    try {
+      const first = PROJECTS.find((p) => p.private);
+      if (first) { const r = await fetch(`${SITE.proxy}repos/${SITE.githubUser}/${first.repo}`); access = r.ok ? "private repos live" : r.status === 404 ? "token has no access to the private repos" : `proxy error ${r.status}`; }
+    } catch (e) { access = "proxy unreachable"; }
+    mode = `GitHub via proxy · shared cache · ${access}`;
+  } else if (proxyState.deployed) mode = "proxy deployed · GITHUB_TOKEN not set · direct GitHub, 60 calls/hour";
+  else mode = "direct GitHub · 60 anonymous calls/hour per network · private repos hidden";
+  $("#footer-host").textContent = `Served by ${host} · ${mode}`;
 }
 
 /* ---------- typewriter ---------- */
@@ -190,8 +198,8 @@ let repoCache = [];
 async function renderProfile() {
   try {
     const [user, repos] = await Promise.all([
-      cachedFetch(`${API}/users/${SITE.githubUser}`),
-      cachedFetch(`${API}/users/${SITE.githubUser}/repos?per_page=100&sort=pushed`),
+      cachedFetch(gh(`users/${SITE.githubUser}`)),
+      cachedFetch(gh(`users/${SITE.githubUser}/repos?per_page=100&sort=pushed`)),
     ]);
     repoCache = repos;
     $("#avatar").src = user.avatar_url;
@@ -210,7 +218,7 @@ async function renderProfile() {
     showNotice(rateLimited ? "GitHub API limit reached for your network. Live numbers return within the hour." : "Could not reach the GitHub API. Showing curated content only.");
   }
   const year = new Date().getFullYear();
-  cachedFetch(`${API}/search/commits?q=author:${SITE.githubUser}+committer-date:>${year}-01-01&per_page=1`)
+  cachedFetch(gh(`search/commits?q=author:${SITE.githubUser}+committer-date:>${year}-01-01&per_page=1`))
     .then((r) => countUp($('[data-stat="commits"]'), r.total_count))
     .catch(() => countUp($('[data-stat="commits"]'), "—"));
 }
@@ -244,7 +252,7 @@ function renderTimeline(repos) {
 async function renderTicker(repos) {
   const totals = {};
   await Promise.all(repos.filter((r) => !r.fork).slice(0, 12).map(async (r) => {
-    try { const l = await cachedFetch(`${API}/repos/${SITE.githubUser}/${r.name}/languages`); for (const [k, v] of Object.entries(l)) totals[k] = (totals[k] || 0) + v; } catch (e) {}
+    try { const l = await cachedFetch(gh(`repos/${SITE.githubUser}/${r.name}/languages`)); for (const [k, v] of Object.entries(l)) totals[k] = (totals[k] || 0) + v; } catch (e) {}
   }));
   const sum = Object.values(totals).reduce((a, b) => a + b, 0) || 1;
   const langs = Object.entries(totals).sort((a, b) => b[1] - a[1]).map(([n, v]) => el("span", { class: "tk" }, [el("i", { style: `background:${langColor(n)}` }), n, el("b", {}, `${(v / sum) * 100 < 1 ? "<1" : Math.round((v / sum) * 100)}%`)]));
@@ -266,7 +274,7 @@ async function renderHeatmap(repos) {
   let total = 0;
   await Promise.all(own.map(async (r) => {
     try {
-      const c = await cachedFetch(`${API}/repos/${SITE.githubUser}/${r.name}/commits?since=${since.toISOString()}&per_page=100&author=${SITE.githubUser}`);
+      const c = await cachedFetch(gh(`repos/${SITE.githubUser}/${r.name}/commits?since=${since.toISOString()}&per_page=100&author=${SITE.githubUser}`));
       for (const x of c) { const d = x.commit.author.date.slice(0, 10); counts[d] = (counts[d] || 0) + 1; total++; }
     } catch (e) {}
   }));
@@ -339,7 +347,7 @@ async function hydrateCard(p, card) {
       for (const a of $$('[data-role="notebook"]', card)) a.href = a.href.replace("/blob/main/", `/blob/${repo.default_branch}/`);
   } catch (e) {
     bar.remove();
-    if (e.status === 404 || (p.private && e.status === 503)) {
+    if (e.status === 404 || (p.private && (e.status === 503 || !proxyState.on))) {
       status.textContent = "Private"; status.classList.add("private");
       meta.replaceChildren(el("span", {}, "Code on request."));
       $('[data-role="readme"]', card).remove();
@@ -626,8 +634,7 @@ renderStatic();
 typewriter($("#typewriter"), SITE.roles);
 clock(); setInterval(clock, 30_000);
 weather();
-renderProjects();
-renderProfile();
 observeReveals();
 bindMagnet();
 if (!REDUCED) sky();
+detectProxy().then(() => { hostBadge(); renderProjects(); renderProfile(); });

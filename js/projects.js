@@ -14,9 +14,11 @@ const SITE = {
   email: "grkristina2@gmail.com",
   linkedin: "https://www.linkedin.com/in/kristina-grigaityt%C4%97/",
   hideFromActivity: ["Tsukinome.github.io", "Files"],
-  // Same-origin proxy for private repos (a Cloudflare Pages Function, see functions/).
-  // On hosts without functions, such as GitHub Pages, the page falls back to "Private".
-  proxy: "/api/repo/",
+  // Same-origin GitHub proxy (a Cloudflare Pages Function, see functions/). When it answers,
+  // every GitHub call goes through it: shared cache, shared 5,000/hour limit, private repos
+  // on its allow-list become visible. On hosts without functions (GitHub Pages) the page talks
+  // to api.github.com directly with the anonymous 60/hour limit and private repos stay hidden.
+  proxy: "/api/gh/",
 };
 
 /* Static milestones. Kaggle projects and "now" are appended automatically from GitHub. */
