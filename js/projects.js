@@ -14,6 +14,9 @@ const SITE = {
   email: "grkristina2@gmail.com",
   linkedin: "https://www.linkedin.com/in/kristina-grigaityt%C4%97/",
   hideFromActivity: ["Tsukinome.github.io", "Files"],
+  // Same-origin proxy for private repos (a Cloudflare Pages Function, see functions/).
+  // On hosts without functions, such as GitHub Pages, the page falls back to "Private".
+  proxy: "/api/repo/",
 };
 
 /* Static milestones. Kaggle projects and "now" are appended automatically from GitHub. */
@@ -63,6 +66,7 @@ const PROJECTS = [
     tags: ["Regression", "Gradient boosting", "Neural nets"],
     notebooks: [{ label: "Notebook", path: "Analysis/Ames.ipynb" }],
     started: "2021-07",
+    private: true,
   },
   {
     repo: "Covid-Korea",
@@ -74,5 +78,6 @@ const PROJECTS = [
     tags: ["EDA", "Statistics", "Clustering"],
     notebooks: [{ label: "Notebook", path: "covid.ipynb" }],
     started: "2021-10",
+    private: true,
   },
 ];

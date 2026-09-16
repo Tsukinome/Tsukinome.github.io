@@ -75,10 +75,13 @@ async function cachedFetch(url, ttl = TTL_GH, headers = { Accept: "application/v
     throw Object.assign(new Error("not found"), { status: 404 });
   }
   if (!res.ok) throw Object.assign(new Error(res.statusText), { status: res.status });
+  if (!/json/i.test(res.headers.get("content-type") || "")) throw Object.assign(new Error("not json"), { status: 404 });
   const data = await res.json();
   try { localStorage.setItem(key, JSON.stringify({ t: Date.now(), v: data })); } catch (e) {}
   return data;
 }
+// Private repos go through the same-origin proxy; public ones straight to GitHub.
+const repoBase = (p) => (p.private && SITE.proxy ? `${location.origin}${SITE.proxy}${p.repo}` : `${API}/repos/${SITE.githubUser}/${p.repo}`);
 function showNotice(text) { const n = $("#notice"); n.textContent = text; n.classList.add("show"); }
 
 /* ---------- static text ---------- */
@@ -284,7 +287,10 @@ function projectCard(p) {
       el("div", { class: "meta-row", "data-role": "meta" }, el("span", { class: "skel" }, "loading")),
       el("div", { class: "langbar skel", "data-role": "langbar" }),
     ]),
-    el("div", { class: "card-foot" }, [
+    el("div", { class: "card-foot" }, p.private ? [
+      el("a", { class: "btn btn-sm", href: `mailto:${SITE.email}?subject=${encodeURIComponent("Code request: " + p.repo)}` }, [icon("i-mail"), "Code on request"]),
+      el("button", { class: "btn btn-sm", type: "button", "data-role": "readme", onclick: () => openReadme(p) }, [icon("i-book"), "README"]),
+    ] : [
       el("a", { class: "btn btn-sm", href: repoUrl, target: "_blank", rel: "noopener" }, [icon("i-github"), "Code"]),
       ...(p.notebooks || []).map((n) => el("a", { class: "btn btn-sm", href: `${repoUrl}/blob/main/${encodeURI(n.path)}`, target: "_blank", rel: "noopener", "data-role": "notebook" }, [icon("i-notebook"), n.label])),
       el("button", { class: "btn btn-sm", type: "button", "data-role": "readme", onclick: () => openReadme(p) }, [icon("i-book"), "README"]),
@@ -294,10 +300,11 @@ function projectCard(p) {
 }
 async function hydrateCard(p, card) {
   const status = $('[data-role="status"]', card), meta = $('[data-role="meta"]', card), bar = $('[data-role="langbar"]', card);
-  const base = `${API}/repos/${SITE.githubUser}/${p.repo}`;
+  const base = repoBase(p);
   try {
     const [repo, langs] = await Promise.all([cachedFetch(base), cachedFetch(`${base}/languages`)]);
-    status.textContent = repo.license?.spdx_id && repo.license.spdx_id !== "NOASSERTION" ? repo.license.spdx_id : "Public";
+    status.textContent = p.private ? "Private" : repo.license?.spdx_id && repo.license.spdx_id !== "NOASSERTION" ? repo.license.spdx_id : "Public";
+    if (p.private) { status.classList.add("private"); status.title = "Stats served through a read-only proxy; the code itself stays private."; }
     meta.replaceChildren(
       el("span", {}, [icon("i-star"), String(repo.stargazers_count)]),
       el("span", {}, [icon("i-fork"), String(repo.forks_count)]),
@@ -312,11 +319,10 @@ async function hydrateCard(p, card) {
       for (const a of $$('[data-role="notebook"]', card)) a.href = a.href.replace("/blob/main/", `/blob/${repo.default_branch}/`);
   } catch (e) {
     bar.remove();
-    if (e.status === 404) {
+    if (e.status === 404 || (p.private && e.status === 503)) {
       status.textContent = "Private"; status.classList.add("private");
       meta.replaceChildren(el("span", {}, "Code on request."));
       $('[data-role="readme"]', card).remove();
-      for (const a of $$('[data-role="notebook"]', card)) a.remove();
     } else {
       status.textContent = rateLimited ? "Paused" : "Offline";
       meta.replaceChildren(el("span", {}, rateLimited ? "API limit reached." : "Stats unavailable."));
@@ -352,7 +358,7 @@ async function openReadme(p) {
   body.innerHTML = '<p class="skel" style="width:60%">loading</p><p class="skel">loading</p><p class="skel" style="width:80%">loading</p>';
   modal.showModal();
   try {
-    const data = await cachedFetch(`${API}/repos/${SITE.githubUser}/${p.repo}/readme`);
+    const data = await cachedFetch(`${repoBase(p)}/readme`);
     const md = new TextDecoder().decode(Uint8Array.from(atob(data.content.replace(/\n/g, "")), (c) => c.charCodeAt(0)));
     body.innerHTML = DOMPurify.sanitize(marked.parse(md), { ADD_ATTR: ["target"] });
     const blobBase = data.html_url.replace(/\/README\.md$/i, "/");
@@ -362,7 +368,9 @@ async function openReadme(p) {
       if (!href.startsWith("#")) { a.target = "_blank"; a.rel = "noopener"; }
     }
   } catch (e) {
-    body.innerHTML = `<p style="color:var(--text-muted)">Could not load the README. <a href="https://github.com/${SITE.githubUser}/${p.repo}" target="_blank" rel="noopener">Open on GitHub</a>.</p>`;
+    body.innerHTML = p.private
+      ? `<p style="color:var(--text-muted)">This repository is private and its README isn't available on this host. <a href="mailto:${SITE.email}">Ask for access</a>.</p>`
+      : `<p style="color:var(--text-muted)">Could not load the README. <a href="https://github.com/${SITE.githubUser}/${p.repo}" target="_blank" rel="noopener">Open on GitHub</a>.</p>`;
   }
 }
 
