@@ -11,7 +11,7 @@
  */
 
 const OWNER = "Tsukinome";
-const ALLOWED = new Set(["Kaggle-Ames-2.0", "Covid-Korea"]);
+const ALLOWED = new Set(["Kaggle-Ames-2.0", "Covid-Korea", "loan", "weekly-board"]);
 const CACHE_SECONDS = 3600;
 
 const json = (body, status = 200, extra = {}) =>

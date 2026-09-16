@@ -98,6 +98,21 @@ function renderStatic() {
   $("#c-location").textContent = SITE.location;
   $("#avatar").alt = SITE.name;
   $("#avatar").src = `https://github.com/${SITE.githubUser}.png?size=320`;
+  hostBadge();
+}
+/* Says which host serves this copy and whether private repos can be proxied. Handy for side-by-side demos. */
+async function hostBadge() {
+  const h = location.hostname;
+  const host = h.endsWith("github.io") ? "GitHub Pages" : h.endsWith("pages.dev") || h.endsWith("workers.dev") ? "Cloudflare Pages" : h === "localhost" || h === "127.0.0.1" ? "local server" : h;
+  let proxy = "no proxy · private repos hidden";
+  try {
+    const first = PROJECTS.find((p) => p.private);
+    if (first && SITE.proxy) {
+      const r = await fetch(`${SITE.proxy}${first.repo}`, { method: "GET" });
+      if (/json/i.test(r.headers.get("content-type") || "")) proxy = r.ok ? "proxy on · private repos live" : r.status === 503 ? "proxy deployed · token not set" : `proxy error ${r.status}`;
+    }
+  } catch (e) {}
+  $("#footer-host").textContent = `Served by ${host} · ${proxy}`;
 }
 
 /* ---------- typewriter ---------- */
@@ -203,13 +218,14 @@ function renderTimeline(repos) {
   for (const p of PROJECTS) {
     const iso = byName[p.repo]?.created_at?.slice(0, 7) || p.started;
     if (!iso) continue;
-    items.push({ when: new Date(iso + "-01").toLocaleDateString("en", { month: "short", year: "numeric" }), title: p.title, note: "Kaggle · " + (p.kaggleLabel || "project"), sort: iso, kaggle: true, href: "#projects" });
+    const isKaggle = (p.group || "kaggle") === "kaggle";
+    items.push({ when: new Date(iso + "-01").toLocaleDateString("en", { month: "short", year: "numeric" }), title: p.title, note: isKaggle ? "Kaggle · " + (p.kaggleLabel || "project") : "Built · " + (p.tags?.[0] || "project"), sort: iso, kaggle: isKaggle, build: !isKaggle, href: isKaggle ? "#projects" : "#builds" });
   }
   const latest = repos[0];
   if (latest) items.push({ when: "Now", title: `Working on ${latest.name}`, note: `last push ${relTime(latest.pushed_at)}`, sort: "9999", now: true, href: latest.html_url });
   items.sort((a, b) => a.sort.localeCompare(b.sort));
   $("#timeline").replaceChildren(...items.map((it, i) =>
-    el("li", { class: "tl reveal" + (it.kaggle ? " kaggle" : "") + (it.now ? " now" : ""), style: `--i:${i}` }, [
+    el("li", { class: "tl reveal" + (it.kaggle ? " kaggle" : "") + (it.build ? " build" : "") + (it.now ? " now" : ""), style: `--i:${i}` }, [
       el("span", { class: "tl-when" }, it.when),
       el("div", { class: "tl-body" }, [
         it.href ? el("a", { class: "tl-title", href: it.href, target: it.href.startsWith("#") ? null : "_blank", rel: "noopener" }, it.title) : el("span", { class: "tl-title" }, it.title),
@@ -330,15 +346,20 @@ async function hydrateCard(p, card) {
   }
 }
 function renderProjects() {
-  const grid = $("#project-grid");
-  const cards = PROJECTS.map((p) => { const c = projectCard(p); grid.append(c); return [p, c]; });
-  renderFilters(cards.map(([, c]) => c));
-  cards.forEach(([p, c], i) => setTimeout(() => hydrateCard(p, c), i * 120));
+  const all = [];
+  for (const grid of $$("[data-grid]")) {
+    const group = grid.dataset.grid;
+    const items = PROJECTS.filter((p) => (p.group || "kaggle") === group);
+    const cards = items.map((p) => { const c = projectCard(p); grid.append(c); return [p, c]; });
+    renderFilters($(`[data-filters="${group}"]`), items, cards.map(([, c]) => c));
+    all.push(...cards);
+  }
+  all.forEach(([p, c], i) => setTimeout(() => hydrateCard(p, c), i * 120));
   bindTilt(); bindMagnet();
 }
-function renderFilters(cards) {
-  const tags = [...new Set(PROJECTS.flatMap((p) => p.tags || []))].sort();
-  const bar = $("#filters");
+function renderFilters(bar, items, cards) {
+  if (!bar) return;
+  const tags = [...new Set(items.flatMap((p) => p.tags || []))].sort();
   let active = "All";
   const apply = () => {
     for (const c of cards) c.classList.toggle("hidden", active !== "All" && !c.dataset.tags.split("|").includes(active));
@@ -381,7 +402,7 @@ function buildPalette() {
   const gh = `https://github.com/${SITE.githubUser}`;
   pItems = [
     ...$$(".chapter").map((c) => ({ group: "Chapter", label: c.dataset.chapter, hint: c.querySelector("h1, h2")?.textContent || "", run: () => c.scrollIntoView({ behavior: "smooth" }) })),
-    ...PROJECTS.map((p) => ({ group: "Project", label: p.title, hint: p.repo, run: () => open(`${gh}/${p.repo}`, "_blank", "noopener") })),
+    ...PROJECTS.map((p) => ({ group: (p.group || "kaggle") === "kaggle" ? "Kaggle" : "Build", label: p.title, hint: p.private ? p.repo + " · private" : p.repo, run: () => p.private ? $("#builds").scrollIntoView({ behavior: "smooth" }) : open(`${gh}/${p.repo}`, "_blank", "noopener") })),
     ...repoCache.filter((r) => !r.fork && !PROJECTS.some((p) => p.repo === r.name) && !(SITE.hideFromActivity || []).includes(r.name)).slice(0, 8).map((r) => ({ group: "Repo", label: r.name, hint: r.description || relTime(r.pushed_at), run: () => open(r.html_url, "_blank", "noopener") })),
     { group: "Action", label: "Toggle light / dark", hint: "theme", run: toggleTheme },
     { group: "Action", label: "Copy email", hint: SITE.email, run: () => navigator.clipboard?.writeText(SITE.email) },

@@ -440,3 +440,7 @@ kbd { font-family: var(--mono); font-size: .68rem; padding: .05rem .3rem; border
 :root[data-sky="day"] .hero::after { background:
   linear-gradient(180deg, rgba(11,12,26,.35) 0%, rgba(11,12,26,.15) 40%, rgba(11,12,26,.55) 78%, var(--bg) 100%),
   linear-gradient(180deg, rgba(60,50,120,.75) 0%, rgba(120,80,150,.55) 40%, rgba(200,120,140,.5) 62%, rgba(246,170,120,.55) 80%, rgba(250,210,150,.4) 90%, rgba(11,12,26,.7) 100%); }
+
+.tl.build::before { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 40%, var(--bg)); box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 50%, transparent); }
+footer { gap: .5rem 1.5rem; }
+#footer-host { font-family: var(--mono); font-size: .72rem; color: var(--accent); }

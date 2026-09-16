@@ -7,13 +7,13 @@
   <meta name="description" content="Kaggle projects and data analysis work by Kristina Grigaitytė. A live portfolio that reads its stats straight from GitHub." />
   <meta property="og:title" content="Kristina Grigaitytė · Data portfolio" />
   <meta property="og:description" content="Kaggle projects and data analysis work. A live portfolio that reads its stats straight from GitHub." />
-  <meta property="og:image" content="https://avatars.githubusercontent.com/u/75446070?v=8" />
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/75446070?v=9" />
   <link rel="icon" type="image/x-icon" href="assets/img/favicon.ico" />
   <link rel="preconnect" href="https://api.github.com" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=8" />
+  <link rel="stylesheet" href="css/style.css?v=9" />
   <script>
     // Apply a saved theme before first paint to avoid a flash.
     try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
@@ -44,6 +44,7 @@
     <ul class="nav-links">
       <li><a href="#journey">Journey</a></li>
       <li><a href="#projects">Kaggle</a></li>
+      <li><a href="#builds">Builds</a></li>
       <li><a href="#contact">Contact</a></li>
       <li><button class="kbd-btn" id="palette-btn" type="button" aria-label="Open command palette"><kbd>⌘</kbd><kbd>K</kbd></button></li>
       <li><button class="theme-btn" id="theme-toggle" type="button" aria-label="Toggle dark mode"><svg><use href="#i-sun"/></svg></button></li>
@@ -101,8 +102,17 @@
     <div class="wrap">
       <p class="eyebrow reveal">Chapter 02</p>
       <div class="section-head reveal"><h2>The Kaggle years</h2><p>Hover a card. Numbers are live.</p></div>
-      <div class="filters reveal" id="filters" role="group" aria-label="Filter projects by topic"></div>
-      <div class="grid" id="project-grid"></div>
+      <div class="filters reveal" data-filters="kaggle" role="group" aria-label="Filter Kaggle projects by topic"></div>
+      <div class="grid" data-grid="kaggle"></div>
+    </div>
+  </section>
+
+  <section class="chapter" id="builds" data-chapter="Builds">
+    <div class="wrap">
+      <p class="eyebrow reveal">Chapter 03</p>
+      <div class="section-head reveal"><h2>Things I built</h2><p>Scrapers, models behind APIs, and small apps I actually use. Private ones show live stats when a proxy is available.</p></div>
+      <div class="filters reveal" data-filters="build" role="group" aria-label="Filter builds by topic"></div>
+      <div class="grid" data-grid="build"></div>
     </div>
   </section>
 
@@ -122,6 +132,7 @@
 
 <footer class="wrap">
   <span id="footer-name"></span>
+  <span id="footer-host" title="Which host is serving this copy and what it can show"></span>
   <span id="footer-updated"></span>
 </footer>
 
@@ -143,7 +154,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
-<script src="js/projects.js?v=8"></script>
-<script src="js/app.js?v=8"></script>
+<script src="js/projects.js?v=9"></script>
+<script src="js/app.js?v=9"></script>
 </body>
 </html>

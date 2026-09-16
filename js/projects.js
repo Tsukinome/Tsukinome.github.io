@@ -31,6 +31,7 @@ const JOURNEY = [
 const PROJECTS = [
   {
     repo: "Home-credit-default-risk",
+    group: "kaggle",
     title: "Home Credit Default Risk",
     kaggle: "https://www.kaggle.com/c/home-credit-default-risk",
     kaggleLabel: "Featured competition",
@@ -45,6 +46,7 @@ const PROJECTS = [
   },
   {
     repo: "Kaggle-Overfit",
+    group: "kaggle",
     title: "Don't Overfit! II",
     kaggle: "https://www.kaggle.com/c/dont-overfit-ii",
     kaggleLabel: "Playground",
@@ -58,6 +60,7 @@ const PROJECTS = [
   },
   {
     repo: "Kaggle-Ames-2.0",
+    group: "kaggle",
     title: "House Prices",
     kaggle: "https://www.kaggle.com/c/house-prices-advanced-regression-techniques",
     kaggleLabel: "Getting started",
@@ -70,6 +73,7 @@ const PROJECTS = [
   },
   {
     repo: "Covid-Korea",
+    group: "kaggle",
     title: "COVID-19 in South Korea",
     kaggle: "https://www.kaggle.com/kimjihoo/coronavirusdataset",
     kaggleLabel: "Dataset",
@@ -78,6 +82,46 @@ const PROJECTS = [
     tags: ["EDA", "Statistics", "Clustering"],
     notebooks: [{ label: "Notebook", path: "covid.ipynb" }],
     started: "2021-10",
+    private: true,
+  },
+
+  /* ---- Things I built ---- */
+  {
+    repo: "Recipe-scraper",
+    group: "build",
+    title: "Beer recipe scraper",
+    summary: "Scrapes Brewer's Friend recipes into a dataset. Part one of a capstone.",
+    highlights: ["Installable Python package", "Unit tests with pytest"],
+    tags: ["Scraping", "Python package", "Pipeline"],
+    notebooks: [{ label: "Scraper", path: "Beer/beerscraper.py" }],
+  },
+  {
+    repo: "Abv-predict",
+    group: "build",
+    title: "ABV Predict",
+    summary: "Predicts a beer's alcohol content from IBU, SRM, OG and FG. Part two of the capstone.",
+    highlights: ["Regression model served by Flask", "Request log kept in Postgres on Heroku"],
+    tags: ["Regression", "REST API", "Deployment"],
+    notebooks: [{ label: "Model", path: "Models/modelling.ipynb" }, { label: "API", path: "app.py" }],
+  },
+  {
+    repo: "loan",
+    group: "build",
+    title: "Paskolos planner",
+    summary: "A mortgage planner in Lithuanian: compare bank offers, run the numbers, tick off the paperwork.",
+    highlights: ["React + TypeScript front end, Express API", "Postgres via Drizzle, deployed on Railway"],
+    tags: ["TypeScript", "Full stack", "Personal finance"],
+    started: "2026-04",
+    private: true,
+  },
+  {
+    repo: "weekly-board",
+    group: "build",
+    title: "Week Board",
+    summary: "A kanban board with one board per week. Unfinished tasks roll over on Monday by themselves.",
+    highlights: ["Single-file UI, Express + Postgres behind it", "Drag and drop, planned day per task"],
+    tags: ["JavaScript", "Productivity", "Full stack"],
+    started: "2026-07",
     private: true,
   },
 ];
