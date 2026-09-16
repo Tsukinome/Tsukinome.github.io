@@ -109,7 +109,11 @@ async function hostBadge() {
     const first = PROJECTS.find((p) => p.private);
     if (first && SITE.proxy) {
       const r = await fetch(`${SITE.proxy}${first.repo}`, { method: "GET" });
-      if (/json/i.test(r.headers.get("content-type") || "")) proxy = r.ok ? "proxy on · private repos live" : r.status === 503 ? "proxy deployed · token not set" : `proxy error ${r.status}`;
+      if (/json/i.test(r.headers.get("content-type") || ""))
+        proxy = r.ok ? "proxy on · private repos live"
+          : r.status === 503 ? "proxy deployed · token not set"
+          : r.status === 404 ? "proxy on · token has no access to the private repos"
+          : `proxy error ${r.status}`;
     }
   } catch (e) {}
   $("#footer-host").textContent = `Served by ${host} · ${proxy}`;
